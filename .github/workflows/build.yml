@@ -2,8 +2,7 @@ name: Build Gray Engine
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
 
 jobs:
@@ -20,7 +19,7 @@ jobs:
       - name: Setup Haxe
         uses: krdlab/setup-haxe@v1
         with:
-          haxe-version: '4.3.7'
+          haxe-version: 4.3.7
 
       - name: Install Haxelib dependencies
         run: |
@@ -30,18 +29,24 @@ jobs:
           haxelib run lime setup
           haxelib run lime setup flixel
 
-      - name: Build target
-        run: |
-          if [ "${{ matrix.target }}" == "windows" ]; then
-            haxelib run lime build windows
-          else
-            haxelib run lime build html5
-          fi
+      - name: Build Windows
+        if: matrix.target == 'windows'
+        run: haxelib run lime build windows
 
-      - name: Upload build artifacts
+      - name: Build HTML5
+        if: matrix.target == 'html5'
+        run: haxelib run lime build html5
+
+      - name: Upload artifacts (Windows)
+        if: matrix.target == 'windows'
         uses: actions/upload-artifact@v4
         with:
-          name: gray-engine-${{ matrix.target }}
-          path: |
-            Export/windows/bin/*
-            Export/html5/bin/*
+          name: gray-engine-windows
+          path: Export/windows/bin/**
+
+      - name: Upload artifacts (HTML5)
+        if: matrix.target == 'html5'
+        uses: actions/upload-artifact@v4
+        with:
+          name: gray-engine-html5
+          path: Export/html5/bin/**
