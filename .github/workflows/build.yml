@@ -1,0 +1,47 @@
+name: Build Gray Engine
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        target: [windows, html5]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Haxe
+        uses: HaxeFoundation/setup-haxe@v1
+        with:
+          haxe-version: '4.3.7'
+
+      - name: Install Haxelib dependencies
+        run: |
+          haxelib install lime 8.2.2
+          haxelib install flixel 6.1.0
+          haxelib install openfl 9.4.1
+          haxelib run lime setup
+          haxelib run lime setup flixel
+
+      - name: Build target
+        run: |
+          if [ "${{ matrix.target }}" == "windows" ]; then
+            haxelib run lime build windows
+          else
+            haxelib run lime build html5
+          fi
+
+      - name: Save build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: gray-engine-${{ matrix.target }}
+          path: |
+            Export/windows/bin/*
+            Export/html5/bin/*

@@ -1,16 +1,12 @@
 package objects;
 
-import Directories;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup;
 import haxe.ds.StringMap;
 
 class Character extends FlxSpriteGroup {
-    public var name:String;
-    var dir:Directories;
-
-    // Map from animation name -> sprite
+	public var name:String;
     var animSprites:StringMap<FlxSprite>;
     var currentAnim:String;
 
@@ -25,16 +21,11 @@ class Character extends FlxSpriteGroup {
         sprite.antialiasing = true;
 
         var atlas = FlxAtlasFrames.fromSparrow(
-            dir.character(name, file),
-            dir.character(name, file, 'xml')
+		Directories.images('characters/${name}/${file}'), Directories.images('characters/${name}/${file}', 'xml')
         );
         sprite.frames = atlas;
 
-        var frameNames:Array<String> = [];
-        for (i in start...end+1)
-            frameNames.push(xmlPrefix + StringTools.lpad(i + '', '0', 4));
-
-        sprite.animation.addByNames(animName, frameNames, fps, loop);
+		sprite.animation.addByNames(animName, Util.returnNames(xmlPrefix, start, end), fps, loop);
 
         sprite.visible = false;
 

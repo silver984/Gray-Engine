@@ -1,6 +1,5 @@
 package objects;
 
-import Directories;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup;
@@ -8,11 +7,8 @@ import flixel.group.FlxSpriteGroup;
 class AnimatedBoldFont extends FlxSpriteGroup {
     public var text:String = '';
 
-    var dir:Directories;
-
     public function new(text:String = '', x:Float = 0, y:Float = 0) {
-        super(x, y);
-        dir = new Directories();
+		super(x, y);
         setText(text);
     }
 
@@ -36,8 +32,7 @@ class AnimatedBoldFont extends FlxSpriteGroup {
 
             var spr = new FlxSprite(currentX, 0);
             spr.frames = FlxAtlasFrames.fromSparrow(
-                dir.fonts('animated/regular', 'png'),
-                dir.fonts('animated/regular', 'xml')
+			Directories.fonts('animated/regular', 'png'), Directories.fonts('animated/regular', 'xml')
             );
 
             spr.animation.addByPrefix(upper, '${upper} bold', 24, true);

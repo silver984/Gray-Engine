@@ -1,18 +1,25 @@
 package states;
 
-import Conductor;
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import ui.TransitionManager;
 
 class PlayState extends FlxState {
 	var text:FlxText;
 	var conductor:Conductor;
-	var dir:Directories;
-	
-	override public function create() {
+	var switchedState:Bool;
+
+	public function new()
+	{
+		super();
+	}
+
+	override public function create()
+	{
 		super.create(); 
+		switchedState = false;
 
 		text = new FlxText();
 		text.text = '';
@@ -24,19 +31,25 @@ class PlayState extends FlxState {
 		
 		add(text);
 
-		FlxG.sound.play('assets/music/songs/bopeebo/Inst.ogg');
-		
-		var bgMusic:flixel.sound.FlxSound = FlxG.sound.play(dir.music('songs/bopeebo/inst'), 1, true);
-		conductor = new Conductor(bgMusic);
+		Conductor.setMusic('songs/bopeebo/Inst');
+		TransitionManager.fadeOut();
 	}
 
-	override public function update(elapsed:Float) {
+	override public function update(elapsed:Float)
+	{
 		super.update(elapsed);
-		conductor.update();
+		Conductor.update();
 
-		text.text = 'curBeat: ${conductor.curBeat}';
+		text.text = 'curBeat: ${Conductor.curBeat}';
+		text.screenCenter();
 
-		text.x = (FlxG.width / 2) - (text.width / 2);
-		text.y = (FlxG.height / 2) - (text.height / 2);
+		if (switchedState)
+			return;
+
+		if (FlxG.keys.justPressed.ENTER)
+		{
+			TransitionManager.fadeIn(TitleState.new, true);
+			switchedState = true;
+		}
 	}
 }

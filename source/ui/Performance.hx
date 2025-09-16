@@ -1,21 +1,20 @@
-package;
+package ui;
 
-import Directories;
+import flixel.FlxG;
 import flixel.math.FlxMath;
 import openfl.display.Sprite;
 import openfl.filters.DropShadowFilter;
 import openfl.text.TextField;
+import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFormat;
 
 class Performance extends Sprite
 {
-    var dir:Directories;
-	var fps:Int;
+	var fps:Float;
 	var txt:TextField;
-	var fpsCount:Int = 0;
-	var elapsed:Float = 0;
+	var elapsedFrames:Int = 0;
 
-	public function new(x:Float = 5, y:Float = 5)
+	public function new(x:Float = 2, y:Float = 2)
 	{
 		super();
 		visible = true;
@@ -25,7 +24,8 @@ class Performance extends Sprite
 		txt.y = y;
 		txt.selectable = false;
 		txt.mouseEnabled = false;
-		txt.defaultTextFormat = new TextFormat(dir.fonts('vcr'), 12, 0xFFFFFF);
+		txt.defaultTextFormat = new TextFormat(Directories.fonts('vcr'), 12);
+		txt.autoSize = TextFieldAutoSize.LEFT;
 
 		var borderSize:Float = 1;
 		txt.filters = [
@@ -38,24 +38,26 @@ class Performance extends Sprite
 		addChild(txt);
 	}
 
-	override function __enterFrame(deltaTime:Float):Void
+	override function __enterFrame(deltaTime:Int):Void
 	{
-		fpsCount++;
-		elapsed += deltaTime;
-
-		if (elapsed >= 1000)
-		{
-			fps = fpsCount;
-			fpsCount = 0;
-			elapsed = 0;
-            var mem:Null<Float> = getMemory();
-            
-            var extension:String = '';
-            if (mem != null)
-                extension = '\nMEM: ${FlxMath.roundDecimal(mem / 1024 / 1024, 2)}MB';
-
-            txt.text = 'FPS: ${fps}${extension}';
+		elapsedFrames++;
+		var totalFrames:Float = FlxMath.roundDecimal(1 / FlxG.elapsed, 0);
+		if (elapsedFrames >= totalFrames) {
+			fps = totalFrames;
+			elapsedFrames = 0;
 		}
+
+		var mem:Null<Float> = getMemory();
+		var extension:String = '';
+		if (mem != null)
+			extension = '\nMEMORY: ${FlxMath.roundDecimal(mem / 1024 / 1024, 0)}MB';
+
+		txt.text = '${fps}FPS${extension}';
+
+		if (fps <= 30)
+			txt.textColor = 0xFF0000;
+		else
+			txt.textColor = 0xFFFFFF;
 	}
 
     function getMemory():Null<Float>
