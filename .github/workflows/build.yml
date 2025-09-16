@@ -15,10 +15,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Haxe
-        uses: HaxeFoundation/setup-haxe@v1
+        uses: krdlab/setup-haxe@v1
         with:
           haxe-version: '4.3.7'
 
@@ -38,8 +38,8 @@ jobs:
             haxelib run lime build html5
           fi
 
-      - name: Save build artifacts
-        uses: actions/upload-artifact@v3
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
         with:
           name: gray-engine-${{ matrix.target }}
           path: |
